@@ -1,3 +1,3 @@
 source "https://rubygems.org"
 
-gem 'unirest'
+gem 'unirest', '~> 1.1.2'
