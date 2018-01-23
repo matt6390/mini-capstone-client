@@ -13,9 +13,11 @@ puts "     Press [5] to destroy a product entry"
 input_option = gets.chomp
 
 if input_option == "1"
+
   response = Unirest.get("http://localhost:3000/products")
   products = response.body
   puts JSON.pretty_generate(products)
+
 elsif input_option == "2"
   client_params = {}
 
@@ -49,7 +51,7 @@ elsif input_option == "3"
 
 elsif input_option == "4"
   client_params = {}
-  print "Enter the ID of the product you'd like to update"
+  print "Enter the ID of the product you'd like to update "
   input_id = gets.chomp
 
   print "Name: "
@@ -60,6 +62,9 @@ elsif input_option == "4"
 
   print "Image URL: "
   client_params[:image_url] = gets.chomp
+
+  print "On Sale? (true/false): "
+  client_params[:on_sale] = gets.chomp
 
   print "Description: "
   client_params[:description] = gets.chomp
