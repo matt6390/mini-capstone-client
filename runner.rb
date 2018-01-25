@@ -5,6 +5,7 @@ system "clear"
 puts "Welcome to My Mini Capstone"
 puts "=" * 80
 puts "     Press [1] For all products"
+puts "         Press [1.1] Search all products"
 puts "     Press [2] To add a new product"
 puts "     Press [3] To find a specific product"
 puts "     Press [4] to update a product"
@@ -17,6 +18,14 @@ if input_option == "1"
   response = Unirest.get("http://localhost:3000/products")
   products = response.body
   puts JSON.pretty_generate(products)
+
+elsif input_option == "1.1"
+  print "Enter a name to search: "
+  search_term = gets.chomp
+
+  response = Unirest.get("http://localhost:3000/products?search=#{search_term}")
+  products = response.body
+  puts JSON.pretty_generate(products)  
 
 elsif input_option == "2"
   client_params = {}
