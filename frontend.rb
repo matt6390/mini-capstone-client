@@ -1,6 +1,6 @@
 require 'unirest'
 
-require './controllers/products_controller.rb'
+require_relative 'controllers/products_controller'
 #if we were to use require_relative, then we would not need the ./ or the .rb
 require_relative 'views/products_views'
 require_relative 'models/product'
@@ -17,6 +17,9 @@ class Frontend
     puts "=" * 80
     puts "     Press [1] For all products"
     puts "     ---Press [1.1] Search all products"
+    puts "     ---Press [1.2] Sort by product price"
+    puts "     ---Press [1.3] Sort by product price"
+    puts "     ---Press [1.3] Sort by product description"
     puts "     Press [2] To add a new product"
     puts "     Press [3] To find a specific product"
     puts "     Press [4] to update a product"
@@ -28,13 +31,17 @@ class Frontend
       products_index_action
 
     elsif input_option == "1.1"
-      print "Enter a name to search: "
-      search_term = gets.chomp
+      products_search_action
 
-      response = Unirest.get("http://localhost:3000/products?search=#{search_term}")
-      products = response.body
-      puts JSON.pretty_generate(products)  
+    elsif  input_option == "1.2"
+      products_sort_action("price")
 
+    elsif  input_option == "1.3"
+      products_sort_action("name")
+
+    elsif  input_option == "1.4"
+      products_sort_action("description")
+      
     elsif input_option == "2"
       products_create_action
 
@@ -49,4 +56,28 @@ class Frontend
 
     end
   end
+
+  private
+
+  def get_request(url, client_params={})
+    Unirest.get("http://localhost:3000/#{url}", parameters: client_params).body
+  end
+
+  def patch_request(url, client_params={})
+    response = Unirest.patch("http://localhost:3000/#{url}", parameters: client_params)
+    if response.code == 200
+      response.body
+    else
+      nil
+    end
+  end
+
+  def post_request(url, client_params={})
+    Unirest.post("http://localhost:3000/#{url}", parameters: client_params).body
+  end
+
+  def delete_request(url, client_params={})
+    Unirest.delete("http://localhost:3000/#{url}", parameters: client_params).body
+  end
+
 end

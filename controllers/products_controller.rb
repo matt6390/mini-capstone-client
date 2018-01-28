@@ -1,78 +1,75 @@
 module ProductsController
   
   def products_index_action
-    response = Unirest.get("http://localhost:3000/products")
-    product_hashs = response.body
-    products = [ ]
+    # response = Unirest.get("http://localhost:3000/products")
+    product_hashs = get_request("/products")
+    products = Product.convert_hashs(product_hashs)
+    products_index_view(products)
+  end
 
-    product_hashs.each do |product_hash|
-      products << Product.new(product_hash)
-    end 
+  def products_search_action
+    print "Enter a name to search: "
+    search_term = gets.chomp
+
+    # response = Unirest.get("http://localhost:3000/products?search=#{search_term}")
+    # product_hashs = response.body
+
+    product_hashs = get_request("/products?search=#{search_term}")
+    products = Product.convert_hashs(product_hashs)
+
+    products_index_view(products)
+  end
+
+  def products_sort_action(attribute)
+    # response = Unirest.get("http://localhost:3000/products?sort=#{attribute}")
+    # product_hashs = response.body
+
+    product_hashs = get_request("/products?sort=#{attribute}")
+    products = Product.convert_hashs(product_hashs)
+
     products_index_view(products)
   end
 
   def products_show_action
-    print "Which product would you like to see? (Please enter a number)"
-    product_id = gets.chomp
+    product_id = products_id_form
 
-    response = Unirest.get("http://localhost:3000/products/#{product_id}")
-
-    product_hash = response.body
+    # response = Unirest.get("http://localhost:3000/products/#{product_id}")
+    # product_hash = response.body
+    
+    product_hash = get_request("/products/#{product_id}")
     product = Product.new(product_hash)
 
     products_show_view(product)
-
   end
 
   def products_create_action
-    client_params = {}
-
-    print "Name: "
-    client_params[:name] = gets.chomp
-
-    print "Price: "
-    client_params[:price] = gets.chomp
-
-    print "Image URL: "
-    client_params[:image_url] = gets.chomp
-
-    print "Description: "
-    client_params[:description] = gets.chomp
+    client_params = products_new_form
 
     response = Unirest.post(
                           "http://localhost:3000/products",
                           parameters: client_params
                           )
     if response.code == 200
-      product = response.body
-      puts JSON.pretty_generate(product)
+      product_hash = response.body
+      product = Product.new(product_hash)
+      product_show_view(product)
     else
       errors = response.body["errors"]
-      errors.each do |error|
-        puts error
-      end
+      product_errors_view(errors)
     end
   end
 
   def products_update_action
-    client_params = {}
-    print "Enter the ID of the product you'd like to update "
-    input_id = gets.chomp
+    input_id = products_id_form
 
-    print "Name: "
-    client_params[:name] = gets.chomp
+    # response = Unirest.get("http://localhost:3000/products/#{product_id}")
+    # product_hash = response.body
 
-    print "Price: "
-    client_params[:price] = gets.chomp
+    product_hash = get_request("/products/#{"input_id"}")
+    product = Product.new(product_hash)
 
-    print "Image URL: "
-    client_params[:image_url] = gets.chomp
+    client_params = products_update_form(product)
 
-    print "On Sale? (true/false): "
-    client_params[:on_sale] = gets.chomp
-
-    print "Description: "
-    client_params[:description] = gets.chomp
 
     response = Unirest.patch(
                           "http://localhost:3000/products/#{input_id}",
@@ -80,12 +77,12 @@ module ProductsController
                           )
     
     if response.code == 200
-      product = response.body
-      puts JSON.pretty_generate(product)
+      product_hash = response.body
+      product = Product.new(product_hash)
+      products_show_view(products)
     else
       errors = response.body["errors"]
-      errors.each do |error|
-        puts error
+      product_errors_view(errors)
       end
     end
   end
@@ -99,4 +96,3 @@ module ProductsController
     data = response.body
     puts data["message"]
   end
-end
