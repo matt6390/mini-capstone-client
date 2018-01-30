@@ -4,12 +4,17 @@ module ProductsViews
     puts
     puts "#{product.name} - Id: #{product.id}"
     puts
+    puts "Supplier: #{product.supplier_name}"
     puts product.description
     puts
     puts product.price
     puts product.tax 
     puts "-" * 80
     puts product.total
+    puts
+    puts "Pictures"
+    product.picture_urls.each do |picture_url|
+      puts "    •#{picture_url}"
   end
 
   def product_errors_view(errors)
@@ -38,6 +43,9 @@ module ProductsViews
 
     print "Description: "
     client_params[:description] = gets.chomp
+
+    print "Supplier ID: "
+    client_params[:supplier_id] = gets.chomp
 
     client_params
   end
