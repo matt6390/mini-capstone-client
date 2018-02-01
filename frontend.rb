@@ -11,58 +11,124 @@ class Frontend
   include ProductsViews
 
   def run
-    system "clear"
+   
+    while true
 
-    puts "Welcome to My Mini Capstone"
-    puts "=" * 80
-    puts "     Press [1] For all products"
-    puts "     ---Press [1.1] Search all products"
-    puts "     ---Press [1.2] Sort by product price"
-    puts "     ---Press [1.3] Sort by product price"
-    puts "     ---Press [1.3] Sort by product description"
-    puts "     Press [2] To add a new product"
-    puts "     Press [3] To find a specific product"
-    puts "     Press [4] to update a product"
-    puts "     Press [5] to destroy a product entry"
+    
+        system "clear"
+    
+        puts "Welcome to My Mini Capstone"
+        puts "=" * 80
+        puts "     Press [1] For all products"
+        puts "     ---Press [1.1] Search all products"
+        puts "     ---Press [1.2] Sort by product price"
+        puts "     ---Press [1.3] Sort by product price"
+        puts "     ---Press [1.3] Sort by product description"
+        puts "     Press [2] To add a new product"
+        puts "     Press [3] To find a specific product"
+        puts "     Press [4] to update a product"
+        puts "     Press [5] to destroy a product entry"
+        puts "     Press [6] to show all orders"
+        puts ""
+        puts "     [signup] Creates a User"
+        puts "     [login] Login (creates a JSON web token)"
+        puts "     [logout] Logotu (erases all JSON web tokens)"
+        puts "     [q] Quit"
+    
+        input_option = gets.chomp
+    
+        if input_option == "1"
+        products_index_action
 
-    input_option = gets.chomp
+      elsif input_option == "1.1"
+        products_search_action
 
-    if input_option == "1"
-      products_index_action
+      elsif  input_option == "1.2"
+        products_sort_action("price")
 
-    elsif input_option == "1.1"
-      products_search_action
+      elsif  input_option == "1.3"
+        products_sort_action("name")
 
-    elsif  input_option == "1.2"
-      products_sort_action("price")
+      elsif  input_option == "1.4"
+        products_sort_action("description")
+        
+      elsif input_option == "2"
+        products_create_action
 
-    elsif  input_option == "1.3"
-      products_sort_action("name")
-
-    elsif  input_option == "1.4"
-      products_sort_action("description")
+      elsif input_option == "3"
+        products_show_action
       
-    elsif input_option == "2"
-      products_create_action
+      elsif input_option == "4"
+           products_update_action
+      
+      elsif input_option == "5"
+           products_destroy_action
 
-    elsif input_option == "3"
-      products_show_action
+      elsif input_option == "6"
+        orders_hashs = get_request("/orders")
+        puts JSON.pretty_generate(orders_hashs)
+        
+      
+      elsif input_option == "signup"
+        puts "Signup for a new account"
+        puts
+        client_params = {}
+    
+        print "Name: "
+        client_params[:name] = gets.chomp
+    
+        print "Email: "
+        client_params[:email] = gets.chomp
+    
+        print "Password: "
+        client_params[:password] = gets.chomp
+    
+        print "Password Confirmation: "
+        client_params[:password_confirmation] = gets.chomp
+    
+        json_data = post_request("/users", client_params)
+        puts JSON.pretty_generate(json_data)
 
-    elsif input_option == "4"
-      products_update_action
+      elsif input_option == "login"
+        puts "Login"
+        puts 
+        print "Email: "
+        input_email = gets.chomp
 
-    elsif input_option == "5"
-      products_destroy_action
+        print "Password: "
+        input_password = gets.chomp
 
+        response = Unirest.post(
+                                "http://localhost:3000/user_token",
+                                parameters: { 
+                                              auth: {
+                                                      email: input_email,
+                                                      password: input_password
+                                                      }
+                                              }
+                                )
+        puts JSON.pretty_generate(response.body)
+        jwt = response.body["jwt"]
+        Unirest.default_header("Authorization", "Bearer #{jwt}")
+
+      elsif input_option == "logout"
+        jwt = ""
+        Unirest.clear_default_headers
+      
+      elsif input_option == "q"
+        puts "Thanks for using"
+        exit
+      end
+      gets.chomp
     end
   end
-
-  private
-
-  def get_request(url, client_params={})
-    Unirest.get("http://localhost:3000/#{url}", parameters: client_params).body
-  end
-
+       
+    private
+   
+   def get_request(url, client_params={})
+     Unirest.get("http://localhost:3000/#{url}", parameters: client_params).body
+   end
+    
   def patch_request(url, client_params={})
     response = Unirest.patch("http://localhost:3000/#{url}", parameters: client_params)
     if response.code == 200
@@ -79,5 +145,4 @@ class Frontend
   def delete_request(url, client_params={})
     Unirest.delete("http://localhost:3000/#{url}", parameters: client_params).body
   end
-
 end

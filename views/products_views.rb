@@ -13,8 +13,9 @@ module ProductsViews
     puts product.total
     puts
     puts "Pictures"
-    product.picture_urls.each do |picture_url|
+    product.pictures_urls.each do |picture_url|
       puts "    •#{picture_url}"
+    end
   end
 
   def product_errors_view(errors)
@@ -78,5 +79,4 @@ module ProductsViews
       products_show_view(product)
     end
   end
-
 end

@@ -1,5 +1,5 @@
 class Product
-  attr_accessor :id, :name, :image_url, :description, :is_discounted, :tax, :total, :price, :formatted_price, :supplier_name :supplier_id, :pictures_urls
+  attr_accessor :id, :name, :image_url, :description, :is_discounted, :tax, :total, :price, :formatted_price, :supplier_name, :supplier_id, :pictures_urls
   def initialize(input_options)
     @id = input_options["id"]
     @name = input_options["name"]
