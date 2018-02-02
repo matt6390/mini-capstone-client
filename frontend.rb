@@ -22,8 +22,9 @@ class Frontend
         puts "     Press [1] For all products"
         puts "     ---Press [1.1] Search all products"
         puts "     ---Press [1.2] Sort by product price"
-        puts "     ---Press [1.3] Sort by product price"
-        puts "     ---Press [1.3] Sort by product description"
+        puts "     ---Press [1.3] Sort by product name"
+        puts "     ---Press [1.4] Sort by product description"
+        puts "     ---Press [1.5] Show products by category"
         puts "     Press [2] To add a new product"
         puts "     Press [3] To find a specific product"
         puts "     Press [4] to update a product"
@@ -51,6 +52,27 @@ class Frontend
 
       elsif  input_option == "1.4"
         products_sort_action("description")
+
+      elsif input_option == "1.5"
+        puts
+        response = Unirest.get("http://localhost:3000/categories")
+        category_hashs = response.body 
+        puts "Categories:"
+        puts "-" * 40
+        category_hash.each do |category_hash|
+          puts "- #{category_hash["name"]}"
+        end
+
+        print "Enter a category name: "
+        category_name = gets.chomp
+        response = Unirest.get("http://localhost:3000/products?category=#{category_name}")
+        product_hashs = response.body
+
+        product_hashs.each do |product_hash|
+          puts "- #{product_hash["name"]}"
+        end
+
+        
         
       elsif input_option == "2"
         products_create_action
