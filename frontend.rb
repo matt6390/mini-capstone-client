@@ -92,24 +92,24 @@ class Frontend
         
       
       elsif input_option == "signup"
-        puts "Signup for a new account"
+        puts "Signup!"
         puts
         client_params = {}
-    
+
         print "Name: "
         client_params[:name] = gets.chomp
-    
+        
         print "Email: "
         client_params[:email] = gets.chomp
-    
+        
         print "Password: "
         client_params[:password] = gets.chomp
-    
-        print "Password Confirmation: "
+        
+        print "Password confirmation: "
         client_params[:password_confirmation] = gets.chomp
-    
-        json_data = post_request("/users", client_params)
-        puts JSON.pretty_generate(json_data)
+        
+        response = Unirest.post("http://localhost:3000/users", parameters: client_params)
+        puts JSON.pretty_generate(response.body)
 
       elsif input_option == "login"
         puts "Login"
@@ -145,26 +145,22 @@ class Frontend
     end
   end
        
-    private
-   
-   def get_request(url, client_params={})
-     Unirest.get("http://localhost:3000/#{url}", parameters: client_params).body
-   end
-    
-  def patch_request(url, client_params={})
-    response = Unirest.patch("http://localhost:3000/#{url}", parameters: client_params)
-    if response.code == 200
-      response.body
-    else
-      nil
+private
+    def get_request(url, client_params={})
+      Unirest.get("http://localhost:3000#{url}", parameters: client_params).body
     end
-  end
 
-  def post_request(url, client_params={})
-    Unirest.post("http://localhost:3000/#{url}", parameters: client_params).body
-  end
+    def post_request(url, client_params={})
+      Unirest.post("http://localhost:3000#{url}", parameters: client_params).body
+    end
 
-  def delete_request(url, client_params={})
-    Unirest.delete("http://localhost:3000/#{url}", parameters: client_params).body
-  end
+    def patch_request(url, client_params={})
+      Unirest.patch("http://localhost:3000#{url}", parameters: client_params).body
+    end
+
+    def delete_request(url, client_params={})
+      Unirest.delete("http://localhost:3000#{url}", parameters: client_params).body
+    end
 end
+
+

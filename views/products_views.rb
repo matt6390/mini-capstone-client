@@ -53,24 +53,21 @@ module ProductsViews
 
   def products_update_form(product)
     client_params = {}
-    print "Enter the ID of the product you'd like to update "
-    input_id = gets.chomp
 
-    print "Name: "
+    print "Name (#{product.name}): "
     client_params[:name] = gets.chomp
 
-    print "Price: "
+    print "Description (#{product.description}): "
+    client_params[:description] = gets.chomp
+
+    print "Price (#{product.price}): "
     client_params[:price] = gets.chomp
 
-    print "Image URL: "
-    client_params[:image_url] = gets.chomp
+    print "Supplier Id (#{product.supplier_id}): "
+    client_params[:supplier_id] = gets.chomp
 
-    print "On Sale? (true/false): "
-    client_params[:on_sale] = gets.chomp
-
-    print "Description: "
-    client_params[:description] = gets.chomp
-    
+    client_params.delete_if { |key, value| value.empty? }
+    client_params
   end
 
   def products_index_view(products)
