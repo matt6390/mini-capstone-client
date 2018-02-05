@@ -22,7 +22,6 @@ module ProductsViews
     errors.each do |error|
       puts error
     end
-    
   end
 
   def products_id_form

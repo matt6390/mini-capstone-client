@@ -30,10 +30,12 @@ class Frontend
         puts "     Press [4] to update a product"
         puts "     Press [5] to destroy a product entry"
         puts "     Press [6] to show all orders"
+        puts 
+        puts "     Press [cart] Show Shopping Cart"
         puts ""
         puts "     [signup] Creates a User"
         puts "     [login] Login (creates a JSON web token)"
-        puts "     [logout] Logotu (erases all JSON web tokens)"
+        puts "     [logout] Logout (erases all JSON web tokens)"
         puts "     [q] Quit"
     
         input_option = gets.chomp
@@ -89,7 +91,35 @@ class Frontend
       elsif input_option == "6"
         orders_hashs = get_request("/orders")
         puts JSON.pretty_generate(orders_hashs)
+
+      elsif input_option == "cart"
+        puts 
+        puts "Here are all of the items in your shopping cart"
+        puts
+
+        response = Unirest.get("http://localhost:3000/carted_products")
+        carted_products = response.body
         
+        # carted_products.each do |carted_products_hash|
+        #   puts "   * #{carted_products_hash["product"]["name"]}"
+        # end
+
+        puts JSON.pretty_generate(carted_products)
+
+        puts "Press Enter to continue, or press 'o' to place the order"
+
+        if gets.chomp == 'o'
+          response = Unirest.post("http://localhost:3000/orders")
+          order_hash = response.body 
+          puts JSON.pretty_generate(order_hash)
+        end
+
+
+
+
+
+        
+          
       
       elsif input_option == "signup"
         puts "Signup!"
